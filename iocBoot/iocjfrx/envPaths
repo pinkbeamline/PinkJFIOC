@@ -1,0 +1,3 @@
+epicsEnvSet("IOC","iocjfrx")
+epicsEnvSet("TOP","/home/epics/IOCs/rx_quarter_v1.3.4")
+epicsEnvSet("EPICS_BASE","/home/epics/EPICS/base")

@@ -1,0 +1,265 @@
+record(sub, "$(BL):$(DEV):threads_init")
+{
+    field(PINI, "YES")
+    field(INAM, "startserver")
+    field(INPA, "4")
+    field(SNAM, "readaddr")
+}
+
+record(sub, "$(BL):$(DEV):frameid")
+{
+    field(SCAN, ".5 second")
+    field(SNAM, "readaddr")
+    field(INPA, "1")
+}
+
+record(sub, "$(BL):$(DEV):liveframeid")
+{
+    field(SCAN, ".5 second")
+    field(SNAM, "readaddr")
+    field(INPA, "5")
+}
+
+record(sub, "$(BL):$(DEV):blob")
+{
+    field(SNAM, "writeaddr")
+    field(INPA, "0")
+}
+
+record(sub, "$(BL):$(DEV):bloob_RBV")
+{
+    field(SCAN, ".5 second")
+    field(SNAM, "readaddr")
+    field(INPA, "0")
+}
+
+record(aSub, "$(BL):$(DEV):liveupdate")
+{
+    field(SCAN, ".5 second")
+    field(SNAM,"readarrays")
+    field(FTVA, "USHORT")
+    field(NOVA, "262144")
+    field(OUTA, "$(BL):$(DEV):rawframe PP")
+    field(FTVB, "USHORT")
+    field(NOVB, "262144")
+    field(OUTB, "$(BL):$(DEV):gainmap PP")
+    field(FTVC, "USHORT")
+    field(NOVC, "262144")
+    field(FTVD, "USHORT")
+    field(NOVD, "262144")
+    field(FTVE, "ULONG")
+    field(NOVE, "1")
+    field(FTVF, "DOUBLE")
+    field(NOVF, "1")
+    field(OUTF, "$(BL):$(DEV):gainzero PP")
+    field(FTVG, "DOUBLE")
+    field(NOVG, "1")
+    field(OUTG, "$(BL):$(DEV):gainone PP")
+    field(FTVH, "DOUBLE")
+    field(NOVH, "1")
+    field(OUTH, "$(BL):$(DEV):gaintwo PP")
+    field(FTVI, "DOUBLE")
+    field(NOVI, "1")
+    field(OUTI, "$(BL):$(DEV):gainthree PP")
+    field(FTVJ, "USHORT")
+    field(NOVJ, "262144")
+    field(OUTJ, "$(BL):$(DEV):roiaduframe PP")
+}
+
+record(waveform, "$(BL):$(DEV):rawframe"){
+    field(FTVL, "USHORT")
+    field(NELM, "262144")
+}
+
+record(waveform, "$(BL):$(DEV):gainmap"){
+    field(FTVL, "USHORT")
+    field(NELM, "262144")
+}
+
+record(waveform, "$(BL):$(DEV):roiaduframe"){
+    field(FTVL, "USHORT")
+    field(NELM, "262144")
+}
+
+record(ai, "$(BL):$(DEV):gainzero")
+{
+    field(PREC, "0")
+}
+
+record(ai, "$(BL):$(DEV):gainone")
+{
+    field(PREC, "0")
+}
+
+record(ai, "$(BL):$(DEV):gaintwo")
+{
+    field(PREC, "0")
+}
+
+record(ai, "$(BL):$(DEV):gainthree")
+{
+    field(PREC, "0")
+}
+
+record(ao, "$(BL):$(DEV):intensitymax")
+{
+  field(VAL, "65535")
+}
+
+record(ao, "$(BL):$(DEV):intensitymin")
+{
+}
+
+record(sub, "$(BL):$(DEV):TID_RBV")
+{
+    field(SCAN, ".5 second")
+    field(SNAM, "readaddr")
+    field(INPA, "10")
+}
+
+record(sub, "$(BL):$(DEV):TID")
+{
+    field(SNAM, "writeaddr")
+    field(INPA, "10")
+}
+
+record(sub, "$(BL):$(DEV):WriterEnable_RBV")
+{
+    field(SCAN, ".5 second")
+    field(SNAM, "readaddr")
+    field(INPA, "11")
+}
+
+record(sub, "$(BL):$(DEV):WriterEnable")
+{
+    field(SNAM, "writeaddr")
+    field(INPA, "11")
+}
+
+record(stringout, "$(BL):$(DEV):filename")
+{
+    field(FLNK, "$(BL):$(DEV):userfilename")
+}
+
+record(aSub, "$(BL):$(DEV):userfilename")
+{
+    field(SNAM, "userfilename")
+    field(FTA, "STRING")
+    field(NOA, "40")
+    field(INPA, "$(BL):$(DEV):filename")
+    field(FTVA, "STRING")
+    field(NOVA, "40")
+    field(OUTA, "$(BL):$(DEV):filename_RBV PP")
+}
+
+record(stringin, "$(BL):$(DEV):filename_RBV")
+{
+
+}
+
+record(sub, "$(BL):$(DEV):detstate")
+{
+    field(SCAN, ".5 second")
+    field(SNAM, "readaddr")
+    field(INPA, "14")
+}
+
+record(sub, "$(BL):$(DEV):roix1")
+{
+    field(SNAM, "writeaddr")
+    field(INPA, "15")
+}
+
+record(sub, "$(BL):$(DEV):roix1_RBV")
+{
+    field(SCAN, "1 second")
+    field(SNAM, "readaddr")
+    field(INPA, "15")
+}
+
+record(sub, "$(BL):$(DEV):roix2")
+{
+    field(SNAM, "writeaddr")
+    field(INPA, "16")
+}
+
+record(sub, "$(BL):$(DEV):roix2_RBV")
+{
+    field(SCAN, "1 second")
+    field(SNAM, "readaddr")
+    field(INPA, "16")
+}
+
+record(sub, "$(BL):$(DEV):roiy1")
+{
+    field(SNAM, "writeaddr")
+    field(INPA, "17")
+}
+
+record(sub, "$(BL):$(DEV):roiy1_RBV")
+{
+    field(SCAN, "1 second")
+    field(SNAM, "readaddr")
+    field(INPA, "17")
+}
+
+record(sub, "$(BL):$(DEV):roiy2")
+{
+    field(SNAM, "writeaddr")
+    field(INPA, "18")
+}
+
+record(sub, "$(BL):$(DEV):roiy2_RBV")
+{
+    field(SCAN, "1 second")
+    field(SNAM, "readaddr")
+    field(INPA, "18")
+}
+
+record(sub, "$(BL):$(DEV):roixsize_RBV")
+{
+    field(SCAN, "1 second")
+    field(SNAM, "readaddr")
+    field(INPA, "19")
+}
+
+record(sub, "$(BL):$(DEV):roiysize_RBV")
+{
+    field(SCAN, "1 second")
+    field(SNAM, "readaddr")
+    field(INPA, "20")
+}
+
+record(sub, "$(BL):$(DEV):roixsize")
+{
+    field(SNAM, "writeaddr")
+    field(INPA, "19")
+}
+
+record(sub, "$(BL):$(DEV):roiysize")
+{
+    field(SNAM, "writeaddr")
+    field(INPA, "20")
+}
+
+record(sub, "$(BL):$(DEV):roibuflag")
+{
+    field(SCAN, ".5 second")
+    field(SNAM, "readaddr")
+    field(INPA, "21")
+    field(EGU, "%")
+}
+
+record(sub, "$(BL):$(DEV):roiprocframe")
+{
+    field(SCAN, ".5 second")
+    field(SNAM, "readaddr")
+    field(INPA, "22")
+}
+
+record(sub, "$(BL):$(DEV):writerprocframe")
+{
+    field(SCAN, ".5 second")
+    field(SNAM, "readaddr")
+    field(INPA, "23")
+}
