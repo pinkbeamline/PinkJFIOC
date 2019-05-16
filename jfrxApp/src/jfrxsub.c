@@ -52,6 +52,16 @@ struct JFDATA {
    int BGSave;
    int BGSave_RBV;
    double ProcTime;
+   int GainEnable;
+   double *histgr;
+   double *histgraxis;
+   int histenable;
+   double histmin;
+   double histmax;
+   int trsenable;
+   double trsmin;
+   double trsmax;
+   int eventenable;
 } jfdata;
 
 struct GPool {
@@ -142,6 +152,38 @@ static long writeaddr(subRecord *precord){
       if((int)precord->val==1){
         jfdata.BGSave_RBV=1;
       }
+      break;
+    case 24:
+      jfdata.GainEnable=(int)precord->val;
+      break;
+    case 25:
+      jfdata.trsenable=(int)precord->val;
+      break;
+    case 26:
+      jfdata.trsmin=precord->val;
+      break;
+    case 27:
+      jfdata.trsmax=precord->val;
+      break;
+    case 28:
+      jfdata.histenable=(int)precord->val;
+      break;
+    case 29:
+      if(precord->val == jfdata.histmax){
+        jfdata.histmin=precord->val+1.0;
+      }else{
+        jfdata.histmin=precord->val;
+      }
+      break;
+    case 30:
+      if(precord->val == jfdata.histmin){
+        jfdata.histmax=precord->val-1.0;
+      }else{
+        jfdata.histmax=precord->val;
+      }
+      break;
+    case 31:
+      jfdata.eventenable=(int)precord->val;
       break;
   }
   return 0;
@@ -258,6 +300,10 @@ static long readarrays(aSubRecord *precord){
       precord->neva=NPIXELS;
       memcpy(precord->valb, jfdata.BGFrame, sizeof(double)*NPIXELS);
       precord->nevb=NPIXELS;
+      memcpy(precord->valj, jfdata.histgr, sizeof(double)*100);
+      precord->nevj=100;
+      memcpy(precord->valk, jfdata.histgraxis, sizeof(double)*100);
+      precord->nevk=100;
       return 0;
     }
 
@@ -351,6 +397,8 @@ static void zmqserver(void *ctx){
   jfdata.BGFrame = (double *)malloc(sizeof(double)*NPIXELS);
   jfdata.rawadu = (char *)malloc(sizeof(double)*NPIXELS);
   tmpframe = (char *)malloc(DATA_SIZE);
+  jfdata.histgr = (double *)malloc(sizeof(double)*100);
+  jfdata.histgraxis = (double *)malloc(sizeof(double)*100);
   //gpool.roiaduframe = (char *)malloc(FRAME_SIZE);
 
   frameid = (unsigned long int *)tmpframe;
@@ -453,21 +501,40 @@ static void procserver(void *ctx){
   struct timeval  ts1, ts2;
   double avgtime;
   char *rawframe;
-  uint32_t *validframes;
+  uint32_t *validframes, *Debug, Debug_last;
   uint16_t *frame;
   double  *framesum;
   int exposure=0;
   double val,summax, summin, totalsum=0;
   double validframestat, totalvalidframes;
+  double *hgainq, pixel, hstep;
+  double *histgr, histmax, histmin, hstcalc;
+  int histindex;
+  FILE *fp;
+  int ttmax=0;
+  int ttmin=400;
 
   jfdata.exposure=1;
   jfdata.totalsum=0;
   totalvalidframes=0;
+  Debug_last=0;
 
   framesum = malloc(sizeof(double)*NPIXELS);
+  hgainq = malloc(sizeof(double)*NPIXELS);
+  histgr = malloc(sizeof(double)*100);
   memset(framesum, 0, sizeof(double)*NPIXELS);
   memset(jfdata.BGFrame, 0, sizeof(double)*NPIXELS);
+  memset(histgr, 0, sizeof(double)*100);
   //memcpy(jfdata.rawadu, framesum, FRAME_SIZE);
+
+  //load gain values from files
+  fp = fopen("gains/hgain_quarter.bin", "r");
+  if(fread(hgainq, sizeof(double), NPIXELS, fp) == NPIXELS){
+    printf("Gain files loaded OK\n");
+  }else{
+    printf("Gain files not loaded\n");
+  }
+  fclose(fp);
 
   while(1)
   {
@@ -475,19 +542,53 @@ static void procserver(void *ctx){
     gettimeofday(&ts1, NULL);
     //printf("Processing blockindex %d\n", gpool.blockindex);
 
+    histmax=jfdata.histmax;
+    histmin=jfdata.histmin;
+    hstcalc = (1/(histmax-histmin))*100;
+
+    if(jfdata.histenable>0){
+      hstep=(histmax-histmin)/100;
+      for(int i=0; i<100; i++){
+        jfdata.histgraxis[i]=histmin+(hstep*i);
+      }
+    }
+
     // Per frame processing
     for(int i=0; i<FRAMES; i++){
       rawframe = &jfdata.rawbuffer[gpool.blockindex][DATA_SIZE*i];
       validframes = (uint32_t *)(rawframe+12);
+      Debug = (uint32_t *)(rawframe+40);
       frame = (uint16_t *)(rawframe+48);
+      if(*Debug!=Debug_last){
+        Debug_last = *Debug;
+        printf("Debug: %08X\n", Debug_last);
+      }
       if(*validframes==128){
         totalvalidframes++;
         for(int j=0; j<NPIXELS; j++){
           if(frame[j]>>14==0){
+            pixel=(double)frame[j];
+            if(jfdata.GainEnable>0){
+              pixel/=hgainq[j];
+            }
             if(jfdata.BGEnable==1){
-              framesum[j]+=(double)frame[j]-jfdata.BGFrame[j];
-            }else{
-              framesum[j]+=(double)frame[j];
+              pixel-=jfdata.BGFrame[j];
+            }
+            if(jfdata.trsenable>0){
+              if(pixel<jfdata.trsmin || pixel>jfdata.trsmax) pixel=0;
+            }
+            if(pixel!=0){
+              if(jfdata.eventenable>0){
+                framesum[j]++;
+              }else{
+                framesum[j]+=pixel;
+              }
+            }
+            if(jfdata.histenable>0){
+              if(pixel>=histmin && pixel<histmax){
+                histindex=(pixel-histmin)*hstcalc;
+                histgr[histindex]++;
+              }
             }
           }
         }
@@ -495,7 +596,13 @@ static void procserver(void *ctx){
     }
 
     if(++exposure>=jfdata.exposure){
+      //for(int j=0; j<NPIXELS; j++){
+      //  framesum[j]/=(exposure*1000.0);
+      //}
       memcpy(jfdata.rawadu, framesum, sizeof(double)*NPIXELS);
+      memcpy(jfdata.histgr, histgr, sizeof(double)*100);
+      //printf("ttmin: %d\tttmax: %d \n", ttmin, ttmax);
+      memset(histgr, 0, sizeof(double)*100);
       // statistics
       summax=0;
       summin=1E200;

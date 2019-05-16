@@ -4,6 +4,7 @@ include $(TOP)/configure/CONFIG
 #----------------------------------------
 #  ADD MACRO DEFINITIONS AFTER THIS LINE
 #=============================
+USR_LDFLAGS_Linux += -fopenmp
 
 #USR_LDFLAGS_Linux +=-L/usr/lib/x86_64-linux-gnu
 #USR_LDFLAGS_Linux +=-lpthread

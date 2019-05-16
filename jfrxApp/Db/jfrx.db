@@ -61,9 +61,12 @@ record(aSub, "$(BL):$(DEV):liveupdate")
     field(FTVI, "DOUBLE")
     field(NOVI, "1")
     field(OUTI, "$(BL):$(DEV):gainthree PP")
-    field(FTVJ, "USHORT")
-    field(NOVJ, "131072")
-    field(OUTJ, "$(BL):$(DEV):roiaduframe PP")
+    field(FTVJ, "DOUBLE")
+    field(NOVJ, "100")
+    field(OUTJ, "$(BL):$(DEV):histgrm PP")
+    field(FTVK, "DOUBLE")
+    field(NOVK, "100")
+    field(OUTK, "$(BL):$(DEV):histgrmaxis PP")
 }
 
 record(waveform, "$(BL):$(DEV):rawframe"){
@@ -76,9 +79,14 @@ record(waveform, "$(BL):$(DEV):BGFrame"){
     field(NELM, "131072")
 }
 
-record(waveform, "$(BL):$(DEV):roiaduframe"){
-    field(FTVL, "USHORT")
-    field(NELM, "131072")
+record(waveform, "$(BL):$(DEV):histgrm"){
+    field(FTVL, "DOUBLE")
+    field(NELM, "100")
+}
+
+record(waveform, "$(BL):$(DEV):histgrmaxis"){
+    field(FTVL, "DOUBLE")
+    field(NELM, "100")
 }
 
 record(ai, "$(BL):$(DEV):gainzero")
@@ -328,4 +336,68 @@ record(sub, "$(BL):$(DEV):ProcTime")
     field(INPA, "29")
     field(PREC, "1")
     field(EGU, "msec")
+    field(HIGH, "800.0")
+    field(HSV, "MINOR")
+    field(HIHI, "1000.0")
+    field(HHSV, "MAJOR")
+}
+
+record(sub, "$(BL):$(DEV):GainEnable")
+{
+    field(SNAM, "writeaddr")
+    field(VAL, "0")
+    field(INPA, "24")
+}
+
+record(sub, "$(BL):$(DEV):TrsEnable")
+{
+    field(SNAM, "writeaddr")
+    field(VAL, "0")
+    field(INPA, "25")
+}
+
+record(sub, "$(BL):$(DEV):Trsmin")
+{
+    field(SNAM, "writeaddr")
+    field(VAL, "0")
+    field(INPA, "26")
+    field(PREC, "2")
+}
+
+record(sub, "$(BL):$(DEV):Trsmax")
+{
+    field(SNAM, "writeaddr")
+    field(VAL, "10")
+    field(INPA, "27")
+    field(PREC, "2")
+}
+
+record(sub, "$(BL):$(DEV):HistEnable")
+{
+    field(SNAM, "writeaddr")
+    field(VAL, "0")
+    field(INPA, "28")
+}
+
+record(sub, "$(BL):$(DEV):histmin")
+{
+    field(SNAM, "writeaddr")
+    field(VAL, "0")
+    field(INPA, "29")
+    field(PREC, "2")
+}
+
+record(sub, "$(BL):$(DEV):histmax")
+{
+    field(SNAM, "writeaddr")
+    field(VAL, "2000")
+    field(INPA, "30")
+    field(PREC, "2")
+}
+
+record(sub, "$(BL):$(DEV):EventEnable")
+{
+    field(SNAM, "writeaddr")
+    field(VAL, "0")
+    field(INPA, "31")
 }

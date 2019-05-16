@@ -217,7 +217,7 @@ static struct iocshVarDef vardefs[] = {
 int jfrx_registerRecordDeviceDriver(DBBASE *pbase)
 {
     static int executed = 0;
-    const char *bldTop = "/home/epics/IOCs/rx_quarter_v1.3.4";
+    const char *bldTop = "/home/epics/IOCs/PinkJFIOC";
     const char *envTop = getenv("TOP");
 
     if (envTop && strcmp(envTop, bldTop)) {
